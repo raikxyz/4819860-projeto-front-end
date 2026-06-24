@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Raízes do Nordeste - App</title>
+    <style>
+        :root {
+            --primary: #D35400;
+            --secondary: #F39C12;
+            --dark: #2C3E50;
+            --light: #F8F9F9;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #AEB6BF; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 15px; }
+        
+        /* Sem limite rígido de altura para impedir que suma qualquer botão */
+        .app-container {
+            width: 100%;
+            max-width: 410px;
+            background-color: var(--light);
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            padding-bottom: 25px;
+            overflow: visible;
+        }
+
+        header { background-color: var(--primary); color: white; padding: 15px; text-align: center; font-weight: bold; font-size: 1.2rem; border-top-left-radius: 20px; border-top-right-radius: 20px; }
+        
+        .screen { display: none; padding: 20px; flex-direction: column; }
+        .screen.active { display: flex; }
+
+        h2 { color: var(--dark); margin-bottom: 15px; font-size: 1.3rem; text-align: center; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; color: var(--dark); font-weight: 500; }
+        input, select { width: 100%; padding: 10px; border: 1px solid #BDC3C7; border-radius: 8px; font-size: 1rem; }
+        
+        button { 
+            width: 100%; padding: 12px; background-color: var(--primary); color: white; 
+            border: none; border-radius: 8px; font-size: 1rem; font-weight: bold; 
+            cursor: pointer; margin-top: 15px; display: block !important; visibility: visible !important;
+        }
+        button:hover { background-color: #A04000; }
+        button.secondary-btn { background-color: #7F8C8D; margin-top: 10px; }
+
+        .link-text { text-align: center; color: var(--primary); margin-top: 15px; cursor: pointer; text-decoration: underline; }
+        
+        .lgpd-box { display: flex; align-items: flex-start; gap: 10px; margin-top: 15px; background: #EBF5FB; padding: 12px; border-radius: 8px; border: 1px solid #AED6F1; }
+        .lgpd-box input[type="checkbox"] { width: 22px; height: 22px; cursor: pointer; flex-shrink: 0; margin-top: 2px; }
+        .lgpd-box label { font-size: 0.85rem; color: #2C3E50; cursor: pointer; line-height: 1.3; margin: 0; }
+
+        .fidelidade-banner { background: var(--secondary); color: white; padding: 10px; border-radius: 8px; margin-bottom: 15px; text-align: center; font-weight: bold; }
+        .product-card { background: white; border: 1px solid #E5E7E9; border-radius: 8px; padding: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .add-btn { width: auto; padding: 6px 12px; margin: 0; font-size: 0.85rem; }
+        .cart-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #E5E7E9; }
+        .total-box { margin-top: 20px; padding-top: 10px; border-top: 2px solid var(--dark); font-weight: bold; font-size: 1.1rem; display: flex; justify-content: space-between; }
+        .status-container { text-align: center; margin-top: 20px; }
+        .status-badge { display: inline-block; padding: 10px 20px; background: #D4EFDF; color: #196F3D; border-radius: 20px; font-weight: bold; font-size: 1.2rem; margin: 15px 0; }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <header>Raízes do Nordeste</header>
+
+        <div id="screen-cadastro" class="screen active">
+            <h2>Criar Conta</h2>
+            <div class="form-group">
+                <label>Nome Completo</label>
+                <input type="text" id="cad-nome" placeholder="Seu Nome">
+            </div>
+            <div class="form-group">
+                <label>E-mail</label>
+                <input type="email" id="cad-email" placeholder="seuemail@email.com">
+            </div>
+            <div class="form-group">
+                <label>Senha</label>
+                <input type="password" id="cad-senha" placeholder="Mínimo 6 caracteres">
+            </div>
+            <div class="lgpd-box">
+                <input type="checkbox" id="cad-lgpd">
+                <label for="cad-lgpd">
+                    <strong>Consentimento LGPD:</strong> Estou ciente e aceito que os meus dados preenchidos acima sejam guardados localmente no navegador (LocalStorage) para fins de simulação e emissão de pedidos.
+                </label>
+            </div>
+            <button type="button" onclick="realizarCadastro()">Finalizar Cadastro</button>
+            <p class="link-text" onclick="navegar('screen-login')">Já possui conta? Faça Login</p>
+        </div>
+
+        <div id="screen-login" class="screen">
+            <h2>Bem-vindo!</h2>
+            <div class="form-group">
+                <label>E-mail</label>
+                <input type="email" id="login-email" placeholder="seuemail@email.com">
+            </div>
+            <div class="form-group">
+                <label>Senha</label>
+                <input type="password" id="login-senha" placeholder="******">
+            </div>
+            <button type="button" onclick="realizarLogin()">Entrar</button>
+            <p class="link-text" onclick="navegar('screen-cadastro')">Não tem conta? Cadastre-se</p>
+        </div>
+
+        <div id="screen-cardapio" class="screen">
+            <div class="fidelidade-banner">Meus Pontos: <span id="fidelidade-pontos">0</span> ★</div>
+            <div class="form-group">
+                <label>Selecione a Unidade:</label>
+                <select id="select-unidade" onchange="atualizarUnidade()">
+                    <option value="Unidade Centro">Unidade Centro (Timbó)</option>
+                    <option value="Unidade Shopping">Unidade Shopping</option>
+                </select>
+            </div>
+            <h2 id="titulo-cardapio">Cardápio da Unidade Centro</h2>
+            <div id="lista-produtos"></div>
+            <button type="button" class="secondary-btn" onclick="abrirCarrinho()">Ver Carrinho (<span id="cart-count">0</span>)</button>
+        </div>
+
+        <div id="screen-cart" class="screen">
+            <h2>Seu Carrinho</h2>
+            <div id="itens-carrinho"></div>
+            <div class="total-box">
+                <span>Total:</span>
+                <span id="cart-total">R$ 0,00</span>
+            </div>
+            <div class="form-group" style="margin-top: 15px;">
+                <label>Simulação de Cartão (Pagamento Externo)</label>
+                <select id="simula-cartao">
+                    <option value="sucesso">Cartão com Saldo (Aprovar)</option>
+                    <option value="erro">Cartão sem Saldo (Recusar)</option>
+                </select>
+            </div>
+            <button type="button" onclick="processarPagamento()">Confirmar e Pagar Externamente</button>
+            <button type="button" class="secondary-btn" onclick="navegar('screen-cardapio')">Voltar ao Cardápio</button>
+        </div>
+
+        <div id="screen-status" class="screen">
+            <h2>Pedido Confirmado!</h2>
+            <div class="status-container">
+                <p>Status atual do seu pedido:</p>
+                <div class="status-badge" id="pedido-status">Na Cozinha</div>
+                <p style="color: #7F8C8D; font-size: 0.9rem;">O Atendente atualizará quando o prato estiver pronto para retirada.</p>
+            </div>
+            <button type="button" onclick="reiniciarApp()">Fazer Novo Pedido</button>
+        </div>
+    </div>
+
+    <script>
+        const produtos = [
+            { id: 1, nome: "Tapioca de Carne de Sol", preco: 18.00 },
+            { id: 2, nome: "Baião de Dois Simples", preco: 25.00 },
+            { id: 3, nome: "Cuscuz Recheado", preco: 14.50 },
+            { id: 4, nome: "Suco de Cajá 500ml", preco: 8.00 }
+        ];
+        let carrinho = [];
+        let pontosFidelidade = parseInt(localStorage.getItem('pontos')) || 45;
+
+        function navegar(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            const targetScreen = document.getElementById(screenId);
+            if(targetScreen) {
+                targetScreen.classList.add('active');
+            }
+            if(screenId === 'screen-cardapio') renderizarCardapio();
+        }
+
+        function realizarCadastro() {
+            const nome = document.getElementById('cad-nome').value;
+            const email = document.getElementById('cad-email').value;
+            const senha = document.getElementById('cad-senha').value;
+            const lgpd = document.getElementById('cad-lgpd').checked;
+
+            if(!nome || !email || !senha) {
+                alert("Campos obrigatórios ausentes.");
+                return;
+            }
+            if(!lgpd) {
+                alert("Você deve aceitar os termos de privacidade (LGPD).");
+                return;
+            }
+
+            localStorage.setItem('user_email', email);
+            localStorage.setItem('user_password', senha);
+            localStorage.setItem('lgpd_consent', 'true');
+            alert("Cadastro realizado com sucesso!");
+            navegar('screen-login');
+        }
+
+        function realizarLogin() {
+            const email = document.getElementById('login-email').value;
+            const senha = document.getElementById('login-senha').value;
+            const savedEmail = localStorage.getItem('user_email') || "teste@uninter.com";
+            const savedSenha = localStorage.getItem('user_password') || "123456";
+
+            if(email === savedEmail && senha === savedSenha) {
+                document.getElementById('fidelidade-pontos').innerText = pontosFidelidade;
+                navegar('screen-cardapio');
+            } else {
+                alert("E-mail ou senha inválidos.");
+            }
+        }
+
+        function atualizarUnidade() {
+            const unidade = document.getElementById('select-unidade').value;
+            document.getElementById('titulo-cardapio').innerText = "Cardápio da " + unidade;
+        }
+
+        function renderizarCardapio() {
+            const lista = document.getElementById('lista-produtos');
+            lista.innerHTML = "";
+            produtos.forEach(p => {
+                lista.innerHTML += `
+                    <div class="product-card">
+                        <div class="product-info">
+                            <h4>${p.nome}</h4>
+                            <p>R$ ${p.preco.toFixed(2)}</p>
+                        </div>
+                        <button type="button" class="add-btn" onclick="addCarrinho(${p.id})">Adicionar</button>
+                    </div>
+                `;
+            });
+            document.getElementById('cart-count').innerText = carrinho.length;
+        }
+
+        function addCarrinho(id) {
+            const produto = produtos.find(p => p.id === id);
+            carrinho.push(produto);
+            document.getElementById('cart-count').innerText = carrinho.length;
+            alert(`${produto.nome} foi adicionado com sucesso!`);
+        }
+
+        function abrirCarrinho() {
+            renderizarCarrinho();
+            navegar('screen-cart');
+        }
+
+        function renderizarCarrinho() {
+            const container = document.getElementById('itens-carrinho');
+            container.innerHTML = "";
+            let total = 0;
+
+            if(carrinho.length === 0) {
+                container.innerHTML = "<p style='text-align:center; color:#7f8c8d; margin-top:20px;'>Seu carrinho está vazio.</p>";
+            } else {
+                carrinho.forEach((item) => {
+                    total += item.preco;
+                    container.innerHTML += `
+                        <div class="cart-item">
+                            <span>${item.nome}</span>
+                            <strong>R$ ${item.preco.toFixed(2)}</strong>
+                        </div>
+                    `;
+                });
+            }
+            document.getElementById('cart-total').innerText = `R$ ${total.toFixed(2)}`;
+        }
+
+        function processarPagamento() {
+            if(carrinho.length === 0) {
+                alert("Adicione itens antes de finalizar.");
+                return;
+            }
+
+            const tipoPagamento = document.getElementById('simula-cartao').value;
+
+            if(tipoPagamento === "sucesso") {
+                alert("Pagamento aprovado! Pedido enviado.");
+                pontosFidelidade += 10;
+                localStorage.setItem('pontos', pontosFidelidade);
+                navegar('screen-status');
+                simularMudancaStatus();
+            } else {
+                alert("Transação recusada pela operadora.");
+            }
+        }
+
+        function simularMudancaStatus() {
+            const badge = document.getElementById('pedido-status');
+            badge.innerText = "Na Cozinha";
+            setTimeout(() => {
+                badge.innerText = "Pronto para Retirada";
+                badge.style.background = "#FCF3CF";
+                badge.style.color = "#B7950B";
+            }, 5000);
+        }
+
+        function reiniciarApp() {
+            carrinho = [];
+            navegar('screen-cardapio');
+        }
+
+        // Força a tela de cadastro a abrir primeiro sem depender de validações
+        window.onload = function() {
+            navegar('screen-cadastro');
+        };
+    </script>
+</body>
+</html>
